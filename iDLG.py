@@ -82,9 +82,10 @@ def lfw_dataset(lfw_path, shape_img):
 
 
 def main():
-    dataset = 'lfw'
+    dataset = 'cifar10'
     root_path = '.'
-    data_path = os.path.join(root_path, '../data').replace('\\', '/')
+    #data_path = os.path.join(root_path, '../data').replace('\\', '/')
+    data_path =  "~/.torch"
     save_path = os.path.join(root_path, 'results/iDLG_%s'%dataset).replace('\\', '/')
     
     lr = 1.0
@@ -124,6 +125,12 @@ def main():
         hidden = 768
         dst = datasets.CIFAR100(data_path, download=False)
 
+    elif dataset == 'cifar10':
+        shape_img = (32, 32)
+        num_classes = 10
+        channel = 3
+        hidden = 768
+        dst = datasets.CIFAR10(data_path, download=True)
 
     elif dataset == 'lfw':
         shape_img = (32, 32)
@@ -184,7 +191,11 @@ def main():
             elif method == 'iDLG':
                 optimizer = torch.optim.LBFGS([dummy_data, ], lr=lr)
                 # predict the ground-truth label
-                label_pred = torch.argmin(torch.sum(original_dy_dx[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(False)
+
+                 #label_pred = torch.argmin(torch.sum(original_dy_dx[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(False)
+
+                # give iDLG the label free of charge
+                label_pred = gt_label
 
             history = []
             history_iters = []
